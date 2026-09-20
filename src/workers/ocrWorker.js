@@ -1,10 +1,17 @@
 import { createWorker } from 'tesseract.js';
+import { OCR_CONFIG } from '../config/ocrConfig';
 
 let tesseractWorkerPromise = null;
 
 const getWorker = () => {
   if (!tesseractWorkerPromise) {
-    tesseractWorkerPromise = createWorker('eng');
+    tesseractWorkerPromise = (async () => {
+      const worker = await createWorker('eng');
+      await worker.setParameters({
+        tessedit_pageseg_mode: OCR_CONFIG.pageSegmentationMode,
+      });
+      return worker;
+    })();
   }
   return tesseractWorkerPromise;
 };
